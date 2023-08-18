@@ -1,0 +1,4 @@
+[alias]
+nft-watch = "run -p pg-listener"
+start-api = "run"
+job       = "run -p minted-job"

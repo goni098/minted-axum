@@ -1,0 +1,145 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Collection {
+  id          Int     @id @default(autoincrement())
+  slug        String  @unique
+  name        String
+  image_url   String?
+  description String?
+  nfts        NFT[]
+
+  @@map("collection")
+}
+
+model NFT {
+  id                    Int        @id @default(autoincrement())
+  token_id              String
+  token_address         String
+  name                  String
+  image_url             String
+  original_url          String
+  end_date              DateTime   @db.Timestamp(6)
+  block_number          Int        @default(0)
+  description           String?
+  thumbnail_url         String?
+  is_active             Boolean    @default(false)
+  square_price          Float      @default(0)
+  position              Int        @default(0)
+  last_position         Int        @default(0)
+  position_within_block Int        @default(0)
+  last_crawl_date       DateTime   @default(now()) @db.Timestamp(6)
+  collection_id         Int
+  user_id               Int
+  user                  User       @relation(fields: [user_id], references: [id])
+  collection            Collection @relation(fields: [collection_id], references: [id])
+  categories            Category[]
+
+  @@map("nft")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  address    String   @unique
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  is_admin   Boolean  @default(false)
+  nfts       NFT[]
+
+  @@map("user")
+}
+
+model Category {
+  id            Int     @id @default(autoincrement())
+  name          String
+  position      Int     @default(0)
+  last_position Int     @default(0)
+  active        Boolean @default(false)
+  nft_id        Int
+  nfts          NFT     @relation(fields: [nft_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([nft_id, name])
+  @@map("category")
+}
+
+model CategoryBlock {
+  id        Int        @id @default(autoincrement())
+  path      String
+  category  Categories
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt DateTime   @default(now()) @db.Timestamp(6)
+
+  @@map("category_block")
+}
+
+model StaticCategory {
+  id   Int        @id @default(autoincrement())
+  name Categories @unique
+
+  @@map("static_category")
+}
+
+model CategoryStatus {
+  id           Int        @id @default(autoincrement())
+  created_date DateTime   @default(now()) @db.Timestamp(6)
+  name         Categories
+  vol24h       Float
+  vol7d        Float
+  vol30d       Float
+  vol_all_time Float
+  first_place  Float
+  last_place   Float
+  total_item   Int
+  totat_owner  Int
+
+  @@map("category_status")
+}
+
+enum Categories {
+  NFT
+  BAYC
+  CRYPTOPUNKS
+  ETH
+  SOL
+  ENS
+  DEGEN
+  BLUECHIP
+  GIF
+  LAND
+  SOUND
+  PUNK
+  APE
+  AZUKI
+  DOODLES
+  COOLCATS
+  BEEPLE
+  DEGODS
+  PEPE
+  DECENTRALAND
+  SANDBOX
+  CLONEX
+  CYBERKONGZ
+  MOONBIRDS
+  MEEBITS
+  VEEFRIENDS
+  WORLDOFWOMEN
+  GOBLINTOWN
+  PUDGYPENGUINS
+  CRYPTOADZ
+  INVISIBLEFRIENDS
+  GUTTERGANG
+  MFERS
+  DEADFELLAZ
+  DIGIDAIGAKU
+  NOUNS
+  CRYPTODICKBUTTS
+  FREE
+  LOWCOST
+  VERIFIED
+  LOOKSRARE
+  OPENSEA
+  MAGICEDEN
+
+  @@map("categories")
+}

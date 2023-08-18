@@ -1,0 +1,41 @@
+[package]
+name = "minted-axum-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+resolver = "2"
+
+members = [
+    "error",
+    "database",
+    "pg-listener",
+    "minted-job",
+    "cronjob"
+]
+
+[dependencies]
+error = { path = "./error" }
+database = { path = "./database" }
+axum = "0.6.18"
+tokio = { version = "1.29.1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+validator = { version = "0.16.1", features = ["derive"] }
+axum-macros = "0.3.7"
+anyhow = "1.0.71"
+chrono = "0.4.26"
+jsonwebtoken = "8.3.0"
+dotenv = "0.15.0"
+tower-http = { version = "0.4.1", features = ["cors"] }
+siwe = "0.6.0"
+ethers = "2.0.7"
+utoipa-swagger-ui = { version = "3.1.4", features = ["axum"] }
+utoipa = { version = "3.4.0", features = ["axum_extras"] }
+futures = "0.3.28"
+surf = { version = "2.3.2", features = ["hyper-client"] }
+deadpool-redis = { version = "0.12.0", features = ["serde"] }
+sea-orm = { version = "0.11.3", features = ["sqlx-postgres", "runtime-tokio-native-tls", "with-chrono", "with-json", "postgres-array"] }
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+rand = "0.8.5"
