@@ -1,7 +1,7 @@
 use anyhow::Result;
 use sea_orm::{ConnectionTrait, DatabaseConnection, Statement};
 
-pub async fn update_nfts_poistion(
+pub async fn update_nfts_poisition(
   db: &DatabaseConnection,
   payload: serde_json::Value,
 ) -> Result<()> {

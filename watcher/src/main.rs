@@ -1,14 +1,13 @@
 mod block;
 mod position;
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use block::generate_9_block_images;
 use dotenv::dotenv;
-use position::update_nfts_poistion;
+use position::update_nfts_poisition;
 use sea_orm::Database;
 use sqlx::{Pool, Postgres};
+use std::collections::HashMap;
 use watcher::start_listening;
 
 #[tokio::main]
@@ -23,7 +22,7 @@ async fn main() -> Result<()> {
   let mut workers = HashMap::new();
 
   workers.insert("nfts_change", |payload: serde_json::Value, db| async move {
-    update_nfts_poistion(db, payload).await.unwrap();
+    update_nfts_poisition(db, payload).await.unwrap();
     generate_9_block_images(db).await.unwrap();
     Ok(())
   });
