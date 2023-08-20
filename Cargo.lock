@@ -3576,23 +3576,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pg-listener"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "database",
- "dotenv",
- "futures",
- "image",
- "sea-orm",
- "serde",
- "serde_json",
- "sqlx 0.7.1",
- "surf",
- "tokio 1.32.0",
-]
-
-[[package]]
 name = "pharos"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6309,6 +6292,23 @@ name = "wasm-bindgen-shared"
 version = "0.2.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca6ad05a4870b2bf5fe995117d3728437bd27d7cd5f06f13c17443ef369775a1"
+
+[[package]]
+name = "watcher"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "database",
+ "dotenv",
+ "futures",
+ "image",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "sqlx 0.7.1",
+ "surf",
+ "tokio 1.32.0",
+]
 
 [[package]]
 name = "web-sys"

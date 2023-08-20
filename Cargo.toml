@@ -10,7 +10,7 @@ resolver = "2"
 members = [
     "error",
     "database",
-    "pg-listener",
+    "watcher",
     "minted-job",
     "cronjob"
 ]

@@ -51,12 +51,9 @@ pub async fn generate_9_block_images(db: &DatabaseConnection) -> Result<()> {
       .collect::<Vec<ImageBuf>>();
 
     let mut image_block = ImageBuffer::new(360, 360);
+    let child_image_size = 360 / block as usize;
 
     for (idx, buf) in list_bytes.into_iter().enumerate() {
-      let square_size = idx + 1;
-
-      let child_image_size = 360 / square_size;
-
       dbg!(child_image_size);
 
       let child_image = image::load_from_memory(&buf)?.resize(

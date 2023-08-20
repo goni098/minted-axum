@@ -1,12 +1,14 @@
 use anyhow::Result;
-use sqlx::{Pool, Postgres};
+use sea_orm::{ConnectionTrait, DatabaseConnection, Statement};
 
-pub async fn update_nfts_poistion<'a>(
+pub async fn update_nfts_poistion(
+  db: &DatabaseConnection,
   payload: serde_json::Value,
-  pool: &'a Pool<Postgres>,
 ) -> Result<()> {
   dbg!(payload);
-  sqlx::query!(
+
+  db.execute(Statement::from_sql_and_values(
+    sea_orm::DatabaseBackend::Postgres,
     r#"
       WITH nft_ext AS (
         SELECT
@@ -24,12 +26,13 @@ pub async fn update_nfts_poistion<'a>(
           SELECT "nft_ext"."index"
           FROM "nft_ext"
           WHERE "nft"."id" = "nft_ext"."id"
-          LIMIT 1
+          LIMIT $1
         )
       WHERE is_active = true
-  "#
-  )
-  .execute(pool)
+    "#,
+    [1.into()],
+  ))
   .await?;
+
   Ok(())
 }
