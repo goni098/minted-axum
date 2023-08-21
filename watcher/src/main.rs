@@ -22,8 +22,13 @@ async fn main() -> Result<()> {
   let mut workers = HashMap::new();
 
   workers.insert("nfts_change", |payload: serde_json::Value, db| async move {
-    update_nfts_poisition(db, payload).await.unwrap();
-    generate_9_block_images(db).await.unwrap();
+    update_nfts_poisition(db, payload)
+      .await
+      .unwrap_or_else(|e| eprint!("update_nfts_poisition  fail with err {}", e));
+
+    generate_9_block_images(db)
+      .await
+      .unwrap_or_else(|e| eprint!("generate_block fail with err {}", e));
     Ok(())
   });
 
@@ -39,7 +44,7 @@ async fn start_trigger(pool: &Pool<Postgres>) -> Result<()> {
         IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
           PERFORM pg_notify('nfts_change', row_to_json(NEW)::text);
         ELSE          
-          PERFORM pg_notify('nfts_change', row_to_json(OLD)update_nfts_poistion::text);
+          PERFORM pg_notify('nfts_change', row_to_json(OLD)::text);
         END IF;
         RETURN NEW;
       END;

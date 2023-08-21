@@ -33,42 +33,48 @@ fn nfts_range_of_block(block: u32) -> (u32, u32) {
 }
 
 pub async fn generate_9_block_images(db: &DatabaseConnection) -> Result<()> {
+  const BLOCK_SIZE: u32 = 80;
   for block in 1..=9 {
-    let (start_position, end_position) = nfts_range_of_block(block);
+    let db = db.clone();
+    tokio::spawn(async move {
+      let (start_position, end_position) = nfts_range_of_block(block);
 
-    let childs_image_handles = Nft::find()
-      .filter(nft::Column::IsActive.eq(true))
-      .filter(nft::Column::Position.between(start_position, end_position))
-      .all(db)
-      .await?
-      .into_iter()
-      .map(|nft| tokio::spawn(async { img_url_to_buffer(nft.image_url).await.unwrap() }));
+      let childs_image_handles = Nft::find()
+        .filter(nft::Column::IsActive.eq(true))
+        .filter(nft::Column::Position.between(start_position, end_position))
+        .all(&db)
+        .await
+        .unwrap()
+        .into_iter()
+        .map(|nft| tokio::spawn(async { img_url_to_buffer(nft.image_url).await.unwrap() }));
 
-    let childs_image_buff = future::join_all(childs_image_handles)
-      .await
-      .into_iter()
-      .map(|h| h.unwrap())
-      .collect::<Vec<ImageBuf>>();
+      let childs_image_buff = future::join_all(childs_image_handles)
+        .await
+        .into_iter()
+        .map(|h| h.unwrap())
+        .collect::<Vec<ImageBuf>>();
 
-    let mut image_block = ImageBuffer::new(360, 360);
-    let child_image_size = 360 / block as usize;
+      let mut image_block = ImageBuffer::new(BLOCK_SIZE, BLOCK_SIZE);
+      let child_image_size: u32 = BLOCK_SIZE / block;
 
-    for (idx, buf) in childs_image_buff.into_iter().enumerate() {
-      dbg!(child_image_size);
+      for (idx, buf) in childs_image_buff.into_iter().enumerate() {
+        let child_image = image::load_from_memory(&buf).unwrap().resize_exact(
+          child_image_size as u32,
+          child_image_size as u32,
+          image::imageops::FilterType::Lanczos3,
+        );
 
-      let child_image = image::load_from_memory(&buf)?.resize(
-        child_image_size as u32,
-        child_image_size as u32,
-        image::imageops::FilterType::Lanczos3,
-      );
+        let x: u32 = ((idx as u32) % block) * (BLOCK_SIZE / block);
+        let y: u32 = ((idx as u32) / block) * (BLOCK_SIZE / block);
 
-      let x = (idx % child_image_size) * child_image_size;
-      let y = (idx / child_image_size) * child_image_size;
+        image_block
+          .copy_from(&child_image, x, y)
+          .unwrap_or_else(|e| eprintln!("e: {}", e));
+      }
 
-      image_block.copy_from(&child_image, x as u32, y as u32)?;
-    }
-
-    image_block.save(format!("block_{block}.png"))?;
+      image_block.save(format!("/home/theanh098/rust-lang/rust-workspace/minted-axum-api/watcher/images/block_{block}.png")).unwrap();
+      println!("done block {}", block);
+    });
   }
 
   Ok(())

@@ -1,3 +1,4 @@
 /target
 /dump.rdb
 /pg-listener/target
+/watcher/images

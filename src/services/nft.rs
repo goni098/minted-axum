@@ -125,8 +125,8 @@ pub async fn create_nft(
 
   Nft::insert(nft::ActiveModel {
     token_address: Set(parse_query.token_address),
-    token_id: Set(parse_query.token_id),
-    name: Set(name),
+    token_id: Set(parse_query.token_id.clone()),
+    name: Set(name.unwrap_or(format!("#{}", parse_query.token_id))),
     original_url: Set(permalink),
     image_url: Set(image_url),
     collection_id: Set(collection_id),
@@ -149,7 +149,7 @@ pub async fn create_nft(
 
 #[derive(Deserialize)]
 struct NFTFetched {
-  name: String,
+  name: Option<String>,
   image_url: String,
   permalink: String,
   description: Option<String>,
