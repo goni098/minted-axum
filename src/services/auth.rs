@@ -1,4 +1,4 @@
-use crate::intercept::sercurity::Claims;
+use crate::intercept::security::Claims;
 use crate::utils::refresh_token_generate;
 use anyhow::Result;
 use axum::Json;

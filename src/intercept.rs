@@ -1,2 +1,2 @@
-pub mod sercurity;
+pub mod security;
 pub mod validate;

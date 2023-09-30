@@ -1,4 +1,4 @@
-use crate::intercept::sercurity::Guard;
+use crate::intercept::security::Guard;
 use crate::intercept::validate::{ValidatedJson, ValidatedQuery};
 use crate::opensea::fetch_nft;
 use anyhow::Result;
